@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Gate 4: the runner passes all four shipped profiles and rejects every
 adversarial case.
 

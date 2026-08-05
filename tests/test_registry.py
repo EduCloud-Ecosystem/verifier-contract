@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """The contract's own documents: the schemas and the reason-code registry.
 
 Gate 1 re-run as a test (both schemas validate against the draft 2020-12

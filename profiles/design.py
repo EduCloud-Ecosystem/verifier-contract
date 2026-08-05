@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """
 `verifier.design` — an explicit `not_implemented` stub. Do not build it here.
 

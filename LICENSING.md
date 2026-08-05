@@ -1,10 +1,6 @@
 # Licensing
 
-Status: prepared, not yet in force. This repository is published, and its
-license takes effect, only once the University of Arizona IP release for the
-personal-time work has cleared. Until then this file is a plan, not a grant.
-See `portage/LICENSING.md` and `belay/LICENSING.md` for the same status on
-the sibling repos.
+Status: in force, 2026-08-05.
 
 ## Why this repo is Apache-2.0 only
 
@@ -34,9 +30,3 @@ Contributions are accepted under the Developer Certificate of Origin, with a
 `Signed-off-by` line on each commit, matching the pattern in `portage` and
 `belay`. There is no copyright assignment and no contributor license
 agreement.
-
-## Until the release clears
-
-This repository stays **private**. Nothing in it should be treated as
-licensed for use outside this org, and no code here should be copied into a
-public repo under the assumption that the grant is already in force.

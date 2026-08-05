@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """
 The live citation resolver for `verifier.science`. THE FLAG IT SHIPS BEHIND.
 

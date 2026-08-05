@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """
 Deliberately non-conformant verifiers. Each one violates exactly one clause of
 SPEC.md section 11, and the conformance runner has to catch it for the right

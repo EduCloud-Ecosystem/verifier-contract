@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Socket-level network guard for the conformance runner. Python children only.
 
 SPEC.md section 5 makes "a verifier opens no outbound connection during

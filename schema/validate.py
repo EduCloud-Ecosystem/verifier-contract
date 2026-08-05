@@ -3,6 +3,7 @@
 # requires-python = ">=3.11"
 # dependencies = ["jsonschema>=4.20"]
 # ///
+# SPDX-License-Identifier: Apache-2.0
 """Gate 1: both schemas validate against the JSON Schema draft 2020-12 metaschema.
 
 Offline — `jsonschema` bundles the metaschema, so nothing here touches the network.

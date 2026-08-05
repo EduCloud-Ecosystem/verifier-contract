@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Reference profile implementations for profiles that have no host repository.
 
 The CONTRACT is `SPEC.md`, `schema/` and `conformance/`. It decides nothing and

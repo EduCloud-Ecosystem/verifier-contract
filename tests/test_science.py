@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Gate 3: `verifier.science` with an injected resolver. No network, no model.
 
 The gate's own wording: "a fixture where a citation fails to resolve produces

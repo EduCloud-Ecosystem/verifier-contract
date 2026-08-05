@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """
 The conformance runner. Point it at an executable; it says whether that
 executable is a conformant verifier.
