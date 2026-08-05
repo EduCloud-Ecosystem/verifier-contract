@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/EduCloud-Ecosystem/verifier-contract/schema/context/science.context.schema.json",
+  "title": "verifier.science context",
+  "description": "The context object of a `science` request. SPEC.md section 3.1. The `resolver` field is the injected dependency of SPEC.md section 5: the profile never reaches the network itself, it asks a named resolver, and the only resolver a shipped build registers is the offline one.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["rubric", "resolver"],
+  "properties": {
+    "rubric": {
+      "description": "Rubric keys the candidate must address, each with a source. The key is the identifier a verdict reports (SPEC.md section 6 permits rubric keys in evidence); `pattern` overrides how the key is looked for in the candidate. May be empty.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "pattern": {
+            "description": "Regular expression located in the candidate. Defaults to the literal key. Matched case-insensitively.",
+            "type": "string"
+          },
+          "description": {
+            "description": "Human-readable. Never parsed; never enters evidence.",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "resolver": {
+      "description": "Which citation resolver to use. `inline` resolves only from `sources` in this same request and therefore cannot touch the network — it is what every test and every golden case uses. `live` is registered only by a build that has explicitly installed the live resolver (profiles/science_live.py); a build that has not exits non-zero rather than silently degrading, because a resolver that resolves nothing would turn every citation into science.citation_unresolved.",
+      "type": "string",
+      "enum": ["inline", "live"]
+    },
+    "sources": {
+      "description": "Fixture source records for the `inline` resolver, keyed by citation key. `numbers` is the set of figures the source supports, which is what number traceability is checked against.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": { "type": "string" },
+          "numbers": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["title"]
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/EduCloud-Ecosystem/verifier-contract/schema/context/code.context.schema.json",
+  "title": "verifier.code context",
+  "description": "The context object of a `code` request. SPEC.md section 3.1: the top-level request schema constrains `context` only to `type: object`; each profile closes its own shape here. Nothing in this object is tied to either caller — the same shape serves Portage's fail-up guard and, later, Cairn's grading runner.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["working_dir", "commands"],
+  "properties": {
+    "working_dir": {
+      "description": "Directory the commands run in. Relative paths resolve against the verifier's own working directory, which is how a golden case stays machine-independent (SPEC.md section 8: absolute paths that differ per machine are a determinism hazard).",
+      "type": "string"
+    },
+    "commands": {
+      "description": "The command set. Every key is optional: an absent command is a check that was not configured, which is not the same as a check that passed, and the verdict's evidence records which of the two it was.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "lint": { "$ref": "#/$defs/argv" },
+        "typecheck": { "$ref": "#/$defs/argv" },
+        "test": { "$ref": "#/$defs/argv" }
+      }
+    }
+  },
+  "$defs": {
+    "argv": {
+      "description": "An argv vector, never a shell string. A shell string would make the verdict depend on the shell, and a verifier's decision must depend on nothing but the request (SPEC.md section 8).",
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    }
+  }
+}

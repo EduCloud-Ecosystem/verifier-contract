@@ -1,0 +1,9 @@
+# Build/tooling artifacts. `uv.lock` IS committed: the conformance suite is the
+# published artifact and a third party reproducing a run needs the same
+# jsonschema.
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.DS_Store

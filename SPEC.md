@@ -59,6 +59,24 @@ The converse is equally binding: a verifier that catches its own crash and emits
 distinction from the inside. If a verifier cannot decide, it must exit non-zero
 and say why on `stderr`.
 
+### 1.2 Which non-zero code (informative, not normative)
+
+**Every non-zero exit means the same thing to a conformant caller:** no verdict
+was reached. The contract does not grade failures and a caller must not branch
+on the value. The shipped profiles nevertheless use one convention, because a
+human reading a log deserves to know whether the judge crashed or was never
+built:
+
+| Code | Meaning |
+|---|---|
+| `2` | The request document could not be read or parsed. |
+| `3` | The verifier ran and failed — a missing tool, an unusable `context`, an unregistered resolver. |
+| `4` | The profile is a declared `not_implemented` stub (`verifier.design`). |
+
+A second implementation is free to ignore this table entirely. It is here so
+that the four shipped profiles agree with each other rather than each inventing
+a scheme, and `conformance/` asserts nothing about the value.
+
 ---
 
 ## 2. The two failure kinds, and why they stay apart
@@ -171,14 +189,26 @@ defines its own context shape and each profile SHOULD close that shape with
 `additionalProperties: false` in its own schema. The contract does not do it for
 them, because the contract does not know what a profile needs.
 
-Contexts defined so far:
+Contexts defined so far. The two that have a schema carry it in
+`schema/context/`, and the conformance runner validates a request's `context`
+against it when one exists:
 
-| Profile | `context` fields |
-|---|---|
-| `leak` | `exercise` (object — the full exercise record), `stance` (string), `subject_id` (string, optional — see §6.2) |
-| `code` | `working_dir` (string), `commands` (object) — see Step 3 |
-| `science` | `rubric` (object), `resolver` (string) — see Step 3 |
-| `design` | not defined; the profile is an explicit `not_implemented` stub |
+| Profile | `context` fields | Schema |
+|---|---|---|
+| `leak` | `exercise` (object — the full exercise record), `stance` (string), `subject_id` (string, optional — see §6.2) | — |
+| `code` | `working_dir` (string), `commands` (object with optional `lint`, `typecheck`, `test`, each an argv array) | `schema/context/code.context.schema.json` |
+| `science` | `rubric` (object), `resolver` (string: `inline` \| `live`), `sources` (object, optional — the fixture records the `inline` resolver reads) | `schema/context/science.context.schema.json` |
+| `design` | not defined; the profile is an explicit `not_implemented` stub | — |
+
+`leak` has no context schema because its `exercise` is an entire domain record
+whose shape belongs to Belay, and closing it here would make the contract the
+owner of a value type it does not define. That is a deliberate exception to the
+SHOULD above, not an omission.
+
+`science.sources` is the shape the injected resolver reads when the request
+names the `inline` resolver, which is the only resolver a shipped build
+registers (§5). It is `context` rather than a new top-level field precisely
+because §3's four fields never grow.
 
 ---
 
@@ -335,20 +365,33 @@ Reason codes are `<profile>.<code>`, matching
 
 ### 7.1 Registered codes
 
+`schema/reason_codes.json` is the machine-readable mirror of this table and is
+what the conformance runner checks membership against. This table is
+authoritative for *meaning*; that file is authoritative for *membership*. A test
+in the contract repo fails if they name different codes.
+
 | Code | Source | Meaning |
 |---|---|---|
 | `leak.is_solution` | `LeakEvidence.is_solution` | The candidate contains a snippet that independently meets the exercise goal, per the domain's executable oracle. |
 | `leak.prose_disclosure` | `LeakEvidence.prose_disclosure` | The candidate's prose, code stripped, discloses the solution. |
-| `code.empty_diff` | `failup.py::checks_pass` → `empty-diff` | The working tree is unchanged; the agent did nothing. |
-| `code.lint_failed` | `failup.py::checks_pass` → `lint-failed` | The lint command exited non-zero. Proxy for "the patch is coherent". |
-| `code.tests_failed` | `failup.py::checks_pass` → `tests-failed` | The test command exited non-zero. |
+| `code.empty_diff` | `checks_pass` → `empty-diff`, now `code_profile.py` | The change set is empty; the agent did nothing. |
+| `code.lint_failed` | `checks_pass` → `lint-failed`, now `code_profile.py` | The lint command exited non-zero. Proxy for "the patch is coherent". |
+| `code.typecheck_failed` | new — the optional fourth check | The typecheck command exited non-zero. Emitted only when `context.commands.typecheck` is present. |
+| `code.tests_failed` | `checks_pass` → `tests-failed`, now `code_profile.py` | The test command exited non-zero. |
 | `science.citation_unresolved` | new | A citation in the candidate does not resolve to a live document whose title matches. |
 | `science.rubric_key_missing` | new | A rubric key present in `context` is absent from the candidate, or present without a source. |
 | `science.number_untraceable` | new | A number in the candidate traces to neither a fetched source nor included code. |
 
 `checks_pass`'s fourth return value, `ok`, has no code: it is the `pass` verdict.
-An optional typecheck, if `verifier.code` grows one, registers as
-`code.typecheck_failed`.
+The `code.*` source column names `failup.py::checks_pass` because that is where
+the predicate came from; since Step 5 it lives in
+`portage/src/portage/code_profile.py` and `checks_pass` is gone. The *meanings*
+are unchanged, which is what the append-only policy protects.
+
+`code.typecheck_failed` is registered and, in Portage, never emitted: the fail-up
+guard configures no typecheck command. It is here for Cairn's grading runner,
+which will. A registered code that nothing emits yet is cheap; a code that means
+one thing in old records and another in new ones is not (§7.2).
 
 `verifier.design` is an explicit `not_implemented` stub and registers no codes
 until it is built.

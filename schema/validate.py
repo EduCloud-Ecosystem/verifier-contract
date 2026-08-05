@@ -20,7 +20,14 @@ import sys
 from jsonschema.validators import Draft202012Validator, validator_for
 
 HERE = pathlib.Path(__file__).parent
-SCHEMAS = ("request.schema.json", "verdict.schema.json")
+# The two wire-format schemas, plus every per-profile context schema. A profile
+# SHOULD close its own context shape (SPEC.md §3.1); one that does so with a
+# malformed schema has closed nothing.
+SCHEMAS = tuple(
+    p.relative_to(HERE).as_posix()
+    for p in [HERE / "request.schema.json", HERE / "verdict.schema.json"]
+    + sorted((HERE / "context").glob("*.json"))
+)
 
 
 def main() -> int:

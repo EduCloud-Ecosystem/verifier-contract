@@ -1,0 +1,28 @@
+[project]
+name = "verifier-contract"
+version = "0.1.0"
+description = "The verifier contract: wire format, reason-code registry, conformance suite, and reference profiles for profiles with no host repo yet."
+requires-python = ">=3.11"
+# The CONTRACT itself is SPEC.md + schema/ and has no dependencies at all.
+# The conformance runner uses jsonschema, which is a dev-group dependency
+# because the runner is a test tool, not a runtime artifact.
+dependencies = []
+
+[dependency-groups]
+# uv-native (PEP 735) groups: `uv run pytest` includes these with no --extra flag.
+dev = ["pytest", "jsonschema", "ruff"]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Gate 3/4: the suite must pass with NO network and NO model calls.
+addopts = "-q"

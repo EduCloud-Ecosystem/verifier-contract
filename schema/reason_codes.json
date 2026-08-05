@@ -1,0 +1,60 @@
+{
+  "$comment": "Machine-readable mirror of SPEC.md section 7.1. The prose table in SPEC.md is authoritative for MEANING; this file is authoritative for MEMBERSHIP, because the conformance runner has to check membership mechanically and the namespace-equals-profile rule (SPEC.md section 7) is not expressible in JSON Schema draft 2020-12. tests/test_registry.py asserts the two agree.",
+  "policy": "append-only: a code is never redefined, never removed, never renamed. A code a profile stops emitting is marked status 'retired', keeps its definition, and stays reserved forever. See SPEC.md section 7.2.",
+  "codes": {
+    "leak.is_solution": {
+      "profile": "leak",
+      "status": "active",
+      "source": "LeakEvidence.is_solution",
+      "meaning": "The candidate contains a snippet that independently meets the exercise goal, per the domain's executable oracle."
+    },
+    "leak.prose_disclosure": {
+      "profile": "leak",
+      "status": "active",
+      "source": "LeakEvidence.prose_disclosure",
+      "meaning": "The candidate's prose, code stripped, discloses the solution."
+    },
+    "code.empty_diff": {
+      "profile": "code",
+      "status": "active",
+      "source": "failup.py::checks_pass -> empty-diff",
+      "meaning": "The working tree is unchanged; the agent did nothing."
+    },
+    "code.lint_failed": {
+      "profile": "code",
+      "status": "active",
+      "source": "failup.py::checks_pass -> lint-failed",
+      "meaning": "The lint command exited non-zero. Proxy for \"the patch is coherent\"."
+    },
+    "code.tests_failed": {
+      "profile": "code",
+      "status": "active",
+      "source": "failup.py::checks_pass -> tests-failed",
+      "meaning": "The test command exited non-zero."
+    },
+    "code.typecheck_failed": {
+      "profile": "code",
+      "status": "active",
+      "source": "new (optional fourth check, SPEC.md section 7.1)",
+      "meaning": "The optional typecheck command exited non-zero. Emitted only when context.commands.typecheck is present; the fail-up guard does not configure one."
+    },
+    "science.citation_unresolved": {
+      "profile": "science",
+      "status": "active",
+      "source": "new",
+      "meaning": "A citation in the candidate does not resolve to a live document whose title matches."
+    },
+    "science.rubric_key_missing": {
+      "profile": "science",
+      "status": "active",
+      "source": "new",
+      "meaning": "A rubric key present in context is absent from the candidate, or present without a source."
+    },
+    "science.number_untraceable": {
+      "profile": "science",
+      "status": "active",
+      "source": "new",
+      "meaning": "A number in the candidate traces to neither a fetched source nor included code."
+    }
+  }
+}
