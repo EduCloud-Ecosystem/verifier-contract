@@ -1,0 +1,42 @@
+{
+  "name": "40-empty-candidate-pass",
+  "why": "An empty candidate is a legitimate subject, not an error.",
+  "request": {
+    "profile": "leak",
+    "task": "Compute the mean amount per category from a CSV into `result`.",
+    "candidate": "",
+    "context": {
+      "exercise": {
+        "id": "ds-foundations",
+        "module": "wrangling-eda",
+        "order": 1,
+        "prereqs": [],
+        "title": "01 · Grouped summaries",
+        "concept": "group-by and aggregation",
+        "goalText": "Compute the mean amount per category from a CSV into `result`.",
+        "prompt": "Read data/sales.csv and build `result` as a dict mapping each category to its mean amount.",
+        "starter": "import pandas as pd\ndf = pd.read_csv(\"data/sales.csv\")\n# Goal: build `result` = {category: mean amount} for each category.\nresult = {}\nprint(result)\n"
+      },
+      "stance": "peer"
+    }
+  },
+  "expect": {
+    "verdict": "pass",
+    "profile": "leak",
+    "detail": "no leak signal fired",
+    "evidence": [
+      {
+        "signal": "is_solution",
+        "fired": false,
+        "subject_id": null,
+        "snippet_count": 0
+      },
+      {
+        "signal": "prose_disclosure",
+        "fired": false,
+        "subject_id": null,
+        "snippet_count": 0
+      }
+    ]
+  }
+}

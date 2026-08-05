@@ -1,0 +1,52 @@
+{
+  "name": "10-empty-diff",
+  "why": "The agent did nothing. By the time a request reaches a verifier the caller has already filtered out 'the model was unreachable' (SPEC.md section 2.1), so an empty change set here IS a capability verdict.",
+  "request": {
+    "profile": "code",
+    "task": "Make the failing test pass.",
+    "candidate": "",
+    "context": {
+      "working_dir": ".",
+      "commands": {
+        "lint": [
+          "python3",
+          "-c",
+          "import sys; sys.exit(0)"
+        ],
+        "test": [
+          "python3",
+          "-c",
+          "import sys; sys.exit(0)"
+        ]
+      }
+    }
+  },
+  "expect": {
+    "verdict": "fail",
+    "profile": "code",
+    "reason_code": "code.empty_diff",
+    "detail": "the change set is empty; the agent changed nothing",
+    "evidence": [
+      {
+        "check": "diff",
+        "status": "failed",
+        "changed_files": 0
+      },
+      {
+        "check": "lint",
+        "status": "not_run",
+        "exit_code": null
+      },
+      {
+        "check": "typecheck",
+        "status": "not_configured",
+        "exit_code": null
+      },
+      {
+        "check": "test",
+        "status": "not_run",
+        "exit_code": null
+      }
+    ]
+  }
+}

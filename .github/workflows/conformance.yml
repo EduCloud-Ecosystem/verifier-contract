@@ -1,0 +1,75 @@
+# The conformance suite as a required check.
+#
+# Two of the four shipped profiles live in sibling repositories, because a
+# profile belongs to the repository of the caller that owns its predicate. This
+# workflow checks out whichever of those the runner token can see and lets the
+# runner SKIP the rest, printing what it looked for. A skipped profile is
+# visible in the log and never reported as a pass — see conformance/README.md.
+#
+# The macOS job is the one that exercises the kernel-level half of the network
+# mechanism (`sandbox-exec`); the Ubuntu job runs with the Python socket guard
+# alone and prints that it is doing so. Running both is deliberate: it is how a
+# regression in either layer shows up as a difference between two jobs rather
+# than as silence.
+
+name: conformance
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: contract (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: verifier-contract
+
+      # Optional siblings. `continue-on-error` keeps a fork without access to
+      # the private repositories from failing the required check; the runner
+      # reports those profiles as SKIPPED rather than passing them.
+      - name: Check out Portage (optional)
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          repository: EduCloud-Ecosystem/portage
+          path: portage
+          token: ${{ secrets.SIBLING_CHECKOUT_TOKEN }}
+
+      - uses: astral-sh/setup-uv@v5
+      - name: Sync
+        working-directory: verifier-contract
+        run: uv sync
+
+      # Gate 1: both schemas validate against the draft 2020-12 metaschema.
+      - name: Schemas
+        working-directory: verifier-contract
+        run: uv run python schema/validate.py
+
+      # Gates 3 and 4: profiles and the conformance suite. No network, no model
+      # calls — the suite fails if a verifier so much as opens a socket.
+      - name: Tests
+        working-directory: verifier-contract
+        run: uv run pytest
+
+      - name: Conformance runner
+        working-directory: verifier-contract
+        env:
+          PORTAGE_DIR: ${{ github.workspace }}/portage
+          BELAY_DIR: ${{ github.workspace }}/belay
+        run: uv run python conformance/runner.py
+
+      - name: Lint
+        working-directory: verifier-contract
+        run: uv run ruff check .

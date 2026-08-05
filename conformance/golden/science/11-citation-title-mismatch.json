@@ -1,0 +1,60 @@
+{
+  "name": "11-citation-title-mismatch",
+  "why": "Resolving is not enough: the document's title must match the one the candidate asserts. A citation that points at a real paper that is not the paper claimed is the hallucination this profile is instrumented for.",
+  "request": {
+    "profile": "science",
+    "task": "Write a results section that sources every claim and every number.",
+    "candidate": "## Results\n\nThe effect size was large in the replication [@smith2024].\n\n[@smith2024]: An Entirely Different Paper\n",
+    "context": {
+      "rubric": {
+        "effect_size": {
+          "pattern": "effect size",
+          "description": "reports an effect size"
+        }
+      },
+      "resolver": "inline",
+      "sources": {
+        "smith2024": {
+          "title": "A Replication of the Effect",
+          "numbers": [
+            "0.42",
+            "120"
+          ]
+        }
+      }
+    }
+  },
+  "expect": {
+    "verdict": "fail",
+    "profile": "science",
+    "reason_code": "science.citation_unresolved",
+    "detail": "one or more citations do not resolve to a document whose title matches",
+    "evidence": [
+      {
+        "signal": "citations",
+        "fired": true,
+        "citations_total": 1,
+        "citations_resolved": 0,
+        "citation_resolvability": 0.0,
+        "hallucinated_citation_rate": 1.0,
+        "unresolved": [
+          "smith2024"
+        ]
+      },
+      {
+        "signal": "rubric_keys",
+        "fired": false,
+        "rubric_keys_total": 1,
+        "missing": [],
+        "unsourced": []
+      },
+      {
+        "signal": "numbers",
+        "fired": false,
+        "numbers_total": 0,
+        "untraceable_count": 0,
+        "untraceable": []
+      }
+    ]
+  }
+}

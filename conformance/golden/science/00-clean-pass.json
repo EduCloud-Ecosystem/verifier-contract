@@ -1,0 +1,61 @@
+{
+  "name": "00-clean-pass",
+  "why": "Everything resolves, every rubric key is sourced, every number traces. A pass carries one evidence object per signal EVALUATED, which is what makes coverage measurable rather than assumed (SPEC.md section 4).",
+  "request": {
+    "profile": "science",
+    "task": "Write a results section that sources every claim and every number.",
+    "candidate": "## Results\n\nThe effect size was 0.42 in the replication [@smith2024].\n\nThe sample size was 120 participants [@smith2024].\n\n```python\noutlier_threshold = 3\n```\n\n[@smith2024]: A Replication of the Effect\n",
+    "context": {
+      "rubric": {
+        "effect_size": {
+          "pattern": "effect size",
+          "description": "reports an effect size"
+        },
+        "sample_size": {
+          "pattern": "sample size",
+          "description": "reports a sample size"
+        }
+      },
+      "resolver": "inline",
+      "sources": {
+        "smith2024": {
+          "title": "A Replication of the Effect",
+          "numbers": [
+            "0.42",
+            "120"
+          ]
+        }
+      }
+    }
+  },
+  "expect": {
+    "verdict": "pass",
+    "profile": "science",
+    "detail": "citations resolve, rubric keys are present and sourced, numbers trace",
+    "evidence": [
+      {
+        "signal": "citations",
+        "fired": false,
+        "citations_total": 1,
+        "citations_resolved": 1,
+        "citation_resolvability": 1.0,
+        "hallucinated_citation_rate": 0.0,
+        "unresolved": []
+      },
+      {
+        "signal": "rubric_keys",
+        "fired": false,
+        "rubric_keys_total": 2,
+        "missing": [],
+        "unsourced": []
+      },
+      {
+        "signal": "numbers",
+        "fired": false,
+        "numbers_total": 2,
+        "untraceable_count": 0,
+        "untraceable": []
+      }
+    ]
+  }
+}

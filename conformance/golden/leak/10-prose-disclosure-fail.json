@@ -1,0 +1,43 @@
+{
+  "name": "10-prose-disclosure-fail",
+  "why": "The prose, code stripped, discloses the solution. NOTE what is NOT in this corpus: a `leak.is_solution` case would have to carry a working solution to a shipped Belay exercise, i.e. an answer key, in a repository whose whole purpose is to be published. Belay's own suite covers that path (tests/test_verifier_contract_leak.py), including the both-signals precedence case. Publishing the answer key to prove a verifier withholds answer keys is the joke SPEC.md section 6 is trying to prevent.",
+  "request": {
+    "profile": "leak",
+    "task": "Compute the mean amount per category from a CSV into `result`.",
+    "candidate": "Honestly the answer is just to group by category and take the mean of the amount column.",
+    "context": {
+      "exercise": {
+        "id": "ds-foundations",
+        "module": "wrangling-eda",
+        "order": 1,
+        "prereqs": [],
+        "title": "01 · Grouped summaries",
+        "concept": "group-by and aggregation",
+        "goalText": "Compute the mean amount per category from a CSV into `result`.",
+        "prompt": "Read data/sales.csv and build `result` as a dict mapping each category to its mean amount.",
+        "starter": "import pandas as pd\ndf = pd.read_csv(\"data/sales.csv\")\n# Goal: build `result` = {category: mean amount} for each category.\nresult = {}\nprint(result)\n"
+      },
+      "stance": "peer"
+    }
+  },
+  "expect": {
+    "verdict": "fail",
+    "profile": "leak",
+    "reason_code": "leak.prose_disclosure",
+    "detail": "candidate prose discloses the solution",
+    "evidence": [
+      {
+        "signal": "is_solution",
+        "fired": false,
+        "subject_id": null,
+        "snippet_count": 0
+      },
+      {
+        "signal": "prose_disclosure",
+        "fired": true,
+        "subject_id": null,
+        "snippet_count": 0
+      }
+    ]
+  }
+}

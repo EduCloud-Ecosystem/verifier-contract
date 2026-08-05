@@ -1,0 +1,52 @@
+{
+  "name": "20-lint-failed",
+  "why": "Lint fails and the test command is NOT run — the short-circuit `checks_pass` always had. The verdict says so: `test` reads not_run, not passed.",
+  "request": {
+    "profile": "code",
+    "task": "Make the failing test pass.",
+    "candidate": " M src/portage/failup.py\n M src/portage/code_profile.py\n",
+    "context": {
+      "working_dir": ".",
+      "commands": {
+        "lint": [
+          "python3",
+          "-c",
+          "import sys; sys.exit(1)"
+        ],
+        "test": [
+          "python3",
+          "-c",
+          "import sys; sys.exit(0)"
+        ]
+      }
+    }
+  },
+  "expect": {
+    "verdict": "fail",
+    "profile": "code",
+    "reason_code": "code.lint_failed",
+    "detail": "the lint command exited non-zero",
+    "evidence": [
+      {
+        "check": "diff",
+        "status": "passed",
+        "changed_files": 2
+      },
+      {
+        "check": "lint",
+        "status": "failed",
+        "exit_code": 1
+      },
+      {
+        "check": "typecheck",
+        "status": "not_configured",
+        "exit_code": null
+      },
+      {
+        "check": "test",
+        "status": "not_run",
+        "exit_code": null
+      }
+    ]
+  }
+}

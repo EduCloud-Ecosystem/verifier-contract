@@ -1,0 +1,29 @@
+{
+  "name": "20-oracle-stance-pass",
+  "why": "Oracle stance is explicitly allowed to hand over the solution, so the pack is never consulted and the evidence array is empty — the pre-port control flow, preserved byte for byte.",
+  "request": {
+    "profile": "leak",
+    "task": "Compute the mean amount per category from a CSV into `result`.",
+    "candidate": "Honestly the answer is just to group by category and take the mean of the amount column.",
+    "context": {
+      "exercise": {
+        "id": "ds-foundations",
+        "module": "wrangling-eda",
+        "order": 1,
+        "prereqs": [],
+        "title": "01 · Grouped summaries",
+        "concept": "group-by and aggregation",
+        "goalText": "Compute the mean amount per category from a CSV into `result`.",
+        "prompt": "Read data/sales.csv and build `result` as a dict mapping each category to its mean amount.",
+        "starter": "import pandas as pd\ndf = pd.read_csv(\"data/sales.csv\")\n# Goal: build `result` = {category: mean amount} for each category.\nresult = {}\nprint(result)\n"
+      },
+      "stance": "oracle"
+    }
+  },
+  "expect": {
+    "verdict": "pass",
+    "profile": "leak",
+    "detail": "stance 'oracle' is not gated; the leak profile withholds only under the peer stance",
+    "evidence": []
+  }
+}

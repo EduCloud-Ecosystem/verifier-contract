@@ -1,0 +1,22 @@
+{
+  "$comment": "Where each shipped profile's executable lives. A profile belongs in the repository of the caller that owns its predicate, so two of the four are in sibling checkouts; the runner reports a missing sibling as SKIPPED rather than silently running a smaller suite. ${BELAY}/${PORTAGE} override with BELAY_DIR/PORTAGE_DIR; ${BELAY_PYTHON} resolves Belay's checked-in virtualenv interpreter, whose shebang is stale after the repo move.",
+
+  "leak": {
+    "argv": ["${BELAY_PYTHON}", "-m", "app.agent.leak_profile"],
+    "cwd": "${BELAY}/backend",
+    "requires": "${BELAY}/backend/app/agent/leak_profile.py"
+  },
+  "code": {
+    "argv": ["${PYTHON}", "${PORTAGE}/src/portage/code_profile.py"],
+    "cwd": "${CONTRACT}",
+    "requires": "${PORTAGE}/src/portage/code_profile.py"
+  },
+  "science": {
+    "argv": ["${PYTHON}", "${CONTRACT}/profiles/science.py"],
+    "cwd": "${CONTRACT}"
+  },
+  "design": {
+    "argv": ["${PYTHON}", "${CONTRACT}/profiles/design.py"],
+    "cwd": "${CONTRACT}"
+  }
+}

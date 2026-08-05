@@ -1,0 +1,57 @@
+{
+  "name": "30-typecheck-failed",
+  "why": "The optional fourth check, between lint and tests. Portage configures none; the code is registered for Cairn's grading runner, which will.",
+  "request": {
+    "profile": "code",
+    "task": "Make the failing test pass.",
+    "candidate": " M src/portage/failup.py\n M src/portage/code_profile.py\n",
+    "context": {
+      "working_dir": ".",
+      "commands": {
+        "lint": [
+          "python3",
+          "-c",
+          "import sys; sys.exit(0)"
+        ],
+        "typecheck": [
+          "python3",
+          "-c",
+          "import sys; sys.exit(1)"
+        ],
+        "test": [
+          "python3",
+          "-c",
+          "import sys; sys.exit(0)"
+        ]
+      }
+    }
+  },
+  "expect": {
+    "verdict": "fail",
+    "profile": "code",
+    "reason_code": "code.typecheck_failed",
+    "detail": "the typecheck command exited non-zero",
+    "evidence": [
+      {
+        "check": "diff",
+        "status": "passed",
+        "changed_files": 2
+      },
+      {
+        "check": "lint",
+        "status": "passed",
+        "exit_code": 0
+      },
+      {
+        "check": "typecheck",
+        "status": "failed",
+        "exit_code": 1
+      },
+      {
+        "check": "test",
+        "status": "not_run",
+        "exit_code": null
+      }
+    ]
+  }
+}

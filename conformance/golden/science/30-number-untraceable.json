@@ -1,0 +1,63 @@
+{
+  "name": "30-number-untraceable",
+  "why": "A number traceable to neither a resolved source nor included code. Reported by LINE and ORDINAL, never by value: a numeric literal is candidate text.",
+  "request": {
+    "profile": "science",
+    "task": "Write a results section that sources every claim and every number.",
+    "candidate": "## Results\n\nThe effect size was 0.42 in the replication [@smith2024].\n\nWe also removed 999 outliers before fitting.\n",
+    "context": {
+      "rubric": {
+        "effect_size": {
+          "pattern": "effect size",
+          "description": "reports an effect size"
+        }
+      },
+      "resolver": "inline",
+      "sources": {
+        "smith2024": {
+          "title": "A Replication of the Effect",
+          "numbers": [
+            "0.42",
+            "120"
+          ]
+        }
+      }
+    }
+  },
+  "expect": {
+    "verdict": "fail",
+    "profile": "science",
+    "reason_code": "science.number_untraceable",
+    "detail": "one or more numbers trace to neither a resolved source nor included code",
+    "evidence": [
+      {
+        "signal": "citations",
+        "fired": false,
+        "citations_total": 1,
+        "citations_resolved": 1,
+        "citation_resolvability": 1.0,
+        "hallucinated_citation_rate": 0.0,
+        "unresolved": []
+      },
+      {
+        "signal": "rubric_keys",
+        "fired": false,
+        "rubric_keys_total": 1,
+        "missing": [],
+        "unsourced": []
+      },
+      {
+        "signal": "numbers",
+        "fired": true,
+        "numbers_total": 2,
+        "untraceable_count": 1,
+        "untraceable": [
+          {
+            "line": 5,
+            "ordinal": 0
+          }
+        ]
+      }
+    ]
+  }
+}

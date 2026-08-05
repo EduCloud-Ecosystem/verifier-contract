@@ -1,0 +1,11 @@
+{
+  "name": "00-not-implemented",
+  "why": "A declared stub must fail as a JUDGE (non-zero exit, SPEC.md sections 1.1 and 2.2), never emit {\"verdict\": \"fail\"} to keep its exit code at 0. Read as a verdict, 'nobody built this yet' escalates every design task to the top tier.",
+  "request": {
+    "profile": "design",
+    "task": "Assess this layout.",
+    "candidate": "any candidate at all",
+    "context": {}
+  },
+  "expect_verifier_error": true
+}

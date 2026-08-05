@@ -1,0 +1,44 @@
+{
+  "name": "40-empty-candidate",
+  "why": "An empty candidate is a legitimate subject, not an error (SPEC.md section 3). With nothing cited, both citation rates are null rather than 1.0 — a rate over an empty denominator is undefined, and reporting 1.0 would let an uncited manuscript read as perfectly sourced.",
+  "request": {
+    "profile": "science",
+    "task": "Write a results section that sources every claim and every number.",
+    "candidate": "",
+    "context": {
+      "rubric": {},
+      "resolver": "inline",
+      "sources": {}
+    }
+  },
+  "expect": {
+    "verdict": "pass",
+    "profile": "science",
+    "detail": "citations resolve, rubric keys are present and sourced, numbers trace",
+    "evidence": [
+      {
+        "signal": "citations",
+        "fired": false,
+        "citations_total": 0,
+        "citations_resolved": 0,
+        "citation_resolvability": null,
+        "hallucinated_citation_rate": null,
+        "unresolved": []
+      },
+      {
+        "signal": "rubric_keys",
+        "fired": false,
+        "rubric_keys_total": 0,
+        "missing": [],
+        "unsourced": []
+      },
+      {
+        "signal": "numbers",
+        "fired": false,
+        "numbers_total": 0,
+        "untraceable_count": 0,
+        "untraceable": []
+      }
+    ]
+  }
+}

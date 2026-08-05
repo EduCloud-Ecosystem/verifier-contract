@@ -1,0 +1,40 @@
+{
+  "name": "50-no-commands-configured",
+  "why": "A check nobody configured is not a check that passed. The verdict distinguishes not_configured from passed so a `pass` cannot claim coverage it does not have.",
+  "request": {
+    "profile": "code",
+    "task": "Make the failing test pass.",
+    "candidate": " M src/portage/failup.py\n M src/portage/code_profile.py\n",
+    "context": {
+      "working_dir": ".",
+      "commands": {}
+    }
+  },
+  "expect": {
+    "verdict": "pass",
+    "profile": "code",
+    "detail": "change set is non-empty and every configured check passed",
+    "evidence": [
+      {
+        "check": "diff",
+        "status": "passed",
+        "changed_files": 2
+      },
+      {
+        "check": "lint",
+        "status": "not_configured",
+        "exit_code": null
+      },
+      {
+        "check": "typecheck",
+        "status": "not_configured",
+        "exit_code": null
+      },
+      {
+        "check": "test",
+        "status": "not_configured",
+        "exit_code": null
+      }
+    ]
+  }
+}

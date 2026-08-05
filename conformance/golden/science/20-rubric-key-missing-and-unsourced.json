@@ -1,0 +1,70 @@
+{
+  "name": "20-rubric-key-missing-and-unsourced",
+  "why": "One rubric key absent from the candidate, one present in a paragraph with no citation. Both are science.rubric_key_missing: SPEC.md section 7.1 defines the code as 'absent, or present without a source'.",
+  "request": {
+    "profile": "science",
+    "task": "Write a results section that sources every claim and every number.",
+    "candidate": "## Results\n\nThe effect size was 0.42 in the replication [@smith2024].\n\nThe method was a within-subjects design with no source attached.\n",
+    "context": {
+      "rubric": {
+        "effect_size": {
+          "pattern": "effect size",
+          "description": "reports an effect size"
+        },
+        "sample_size": {
+          "pattern": "sample size",
+          "description": "reports a sample size"
+        },
+        "method": {
+          "pattern": "method",
+          "description": "names the method"
+        }
+      },
+      "resolver": "inline",
+      "sources": {
+        "smith2024": {
+          "title": "A Replication of the Effect",
+          "numbers": [
+            "0.42",
+            "120"
+          ]
+        }
+      }
+    }
+  },
+  "expect": {
+    "verdict": "fail",
+    "profile": "science",
+    "reason_code": "science.rubric_key_missing",
+    "detail": "one or more rubric keys are absent from the candidate or carry no source",
+    "evidence": [
+      {
+        "signal": "citations",
+        "fired": false,
+        "citations_total": 1,
+        "citations_resolved": 1,
+        "citation_resolvability": 1.0,
+        "hallucinated_citation_rate": 0.0,
+        "unresolved": []
+      },
+      {
+        "signal": "rubric_keys",
+        "fired": true,
+        "rubric_keys_total": 3,
+        "missing": [
+          "sample_size"
+        ],
+        "unsourced": [
+          "method"
+        ]
+      },
+      {
+        "signal": "numbers",
+        "fired": false,
+        "numbers_total": 1,
+        "untraceable_count": 0,
+        "untraceable": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,137 @@
+[
+  {
+    "id": "control_conformant_verifier",
+    "why": "A suite that only proves it rejects bad verifiers has not shown it accepts good ones. If this case ever fails, every rejection below is worthless.",
+    "exec": ["${PYTHON}", "conformance/adversarial/verifiers.py", "reference_pass"],
+    "request": {
+      "profile": "leak",
+      "task": "Compute the mean amount per category from a CSV into `result`.",
+      "candidate": "You've read the CSV — what single number should each category collapse to?",
+      "context": {"exercise": {"id": "ds-foundations"}, "stance": "peer"}
+    }
+  },
+  {
+    "id": "malformed_verdict",
+    "why": "SPEC.md section 4. A third verdict value and an extra property, under additionalProperties: false.",
+    "exec": ["${PYTHON}", "conformance/adversarial/verifiers.py", "invalid_verdict"],
+    "must_be_caught_by": "verdict_schema",
+    "request": {
+      "profile": "leak",
+      "task": "Compute the mean amount per category from a CSV into `result`.",
+      "candidate": "You've read the CSV — what single number should each category collapse to?",
+      "context": {"exercise": {"id": "ds-foundations"}, "stance": "peer"}
+    }
+  },
+  {
+    "id": "stdout_is_not_json",
+    "why": "SPEC.md section 1. The wire format is one JSON object on stdout; a caller must never have to parse prose to recover a verdict.",
+    "exec": ["${PYTHON}", "conformance/adversarial/verifiers.py", "unparseable_stdout"],
+    "must_be_caught_by": "stdout_json",
+    "request": {
+      "profile": "leak",
+      "task": "Compute the mean amount per category from a CSV into `result`.",
+      "candidate": "You've read the CSV — what single number should each category collapse to?",
+      "context": {"exercise": {"id": "ds-foundations"}, "stance": "peer"}
+    }
+  },
+  {
+    "id": "fail_with_no_reason_code",
+    "why": "SPEC.md section 4. A fail without a code is a verdict a consumer cannot route on, and routing on verdicts is what the contract is for.",
+    "exec": ["${PYTHON}", "conformance/adversarial/verifiers.py", "fail_without_reason"],
+    "must_be_caught_by": "fail_has_reason_code",
+    "request": {
+      "profile": "leak",
+      "task": "Compute the mean amount per category from a CSV into `result`.",
+      "candidate": "You've read the CSV — what single number should each category collapse to?",
+      "context": {"exercise": {"id": "ds-foundations"}, "stance": "peer"}
+    }
+  },
+  {
+    "id": "unregistered_reason_code",
+    "why": "SPEC.md section 7. Consumers branch on codes; a code outside the append-only registry is a branch nobody has.",
+    "exec": ["${PYTHON}", "conformance/adversarial/verifiers.py", "unregistered_code"],
+    "must_be_caught_by": "reason_code_registered",
+    "request": {
+      "profile": "leak",
+      "task": "Compute the mean amount per category from a CSV into `result`.",
+      "candidate": "You've read the CSV — what single number should each category collapse to?",
+      "context": {"exercise": {"id": "ds-foundations"}, "stance": "peer"}
+    }
+  },
+  {
+    "id": "reason_code_from_another_profile",
+    "why": "SPEC.md section 7. The namespace must equal the profile. This is the cross-field constraint draft 2020-12 cannot express, so this case is the only thing enforcing it.",
+    "exec": ["${PYTHON}", "conformance/adversarial/verifiers.py", "foreign_namespace"],
+    "must_be_caught_by": "reason_code_namespace",
+    "request": {
+      "profile": "leak",
+      "task": "Compute the mean amount per category from a CSV into `result`.",
+      "candidate": "You've read the CSV — what single number should each category collapse to?",
+      "context": {"exercise": {"id": "ds-foundations"}, "stance": "peer"}
+    }
+  },
+  {
+    "id": "non_zero_exit_is_a_verifier_error",
+    "why": "SPEC.md section 1.1, the load-bearing one. A crashed verifier read as a `fail` turns every crash into a universal failure signal: in a fail-up ladder every task silently escalates to the most expensive tier, and in a benchmark the win-tier distribution records capability failures that never happened. The runner must report a VERIFIER ERROR and must hold no verdict at all.",
+    "exec": ["${PYTHON}", "conformance/adversarial/verifiers.py", "crashes"],
+    "must_be_caught_by": "exit_code",
+    "must_be_kind": "verifier_error",
+    "must_have_no_verdict": true,
+    "request": {
+      "profile": "leak",
+      "task": "Compute the mean amount per category from a CSV into `result`.",
+      "candidate": "You've read the CSV — what single number should each category collapse to?",
+      "context": {"exercise": {"id": "ds-foundations"}, "stance": "peer"}
+    }
+  },
+  {
+    "id": "different_verdicts_for_identical_requests",
+    "why": "SPEC.md section 8. The same request produces the same verdict, or a verdict is not evidence of anything.",
+    "exec": ["${PYTHON}", "conformance/adversarial/verifiers.py", "nondeterministic"],
+    "must_be_caught_by": "determinism",
+    "request": {
+      "profile": "leak",
+      "task": "Compute the mean amount per category from a CSV into `result`.",
+      "candidate": "You've read the CSV — what single number should each category collapse to?",
+      "context": {"exercise": {"id": "ds-foundations"}, "stance": "peer"}
+    }
+  },
+  {
+    "id": "request_with_an_extra_field",
+    "why": "SPEC.md sections 3 and 5. additionalProperties: false IS the structural invariant — a fifth field is where a model handle or a credential would travel. The verifier must never be invoked: a malformed request tests nothing about it.",
+    "exec": ["${PYTHON}", "conformance/adversarial/verifiers.py", "reference_pass"],
+    "must_be_caught_by": "request_schema",
+    "must_not_be_invoked": true,
+    "request": {
+      "profile": "leak",
+      "task": "Compute the mean amount per category from a CSV into `result`.",
+      "candidate": "You've read the CSV — what single number should each category collapse to?",
+      "context": {"exercise": {"id": "ds-foundations"}, "stance": "peer"},
+      "model": "claude-opus-5"
+    }
+  },
+  {
+    "id": "verifier_opens_an_outbound_connection",
+    "why": "SPEC.md section 5. This verifier catches its own blocked connection and emits a clean `pass`, so nothing in the verdict, the exit code or stdout gives it away — it is caught only because the guard records the attempt before raising. A rule that lives in prose is a rule a second implementation violates without noticing.",
+    "exec": ["${PYTHON}", "conformance/adversarial/verifiers.py", "phones_home"],
+    "must_be_caught_by": "network_isolation",
+    "request": {
+      "profile": "leak",
+      "task": "Compute the mean amount per category from a CSV into `result`.",
+      "candidate": "You've read the CSV — what single number should each category collapse to?",
+      "context": {"exercise": {"id": "ds-foundations"}, "stance": "peer"}
+    }
+  },
+  {
+    "id": "evidence_reproduces_the_candidate",
+    "why": "SPEC.md sections 6 and 0.2, new in v2. For the leak profile this is the safety property itself: a passage dropped for disclosing a solution must be recorded by id and reason only. A verifier that echoes the text puts it into the trace THROUGH the contract, which is worse than doing it directly because it looks like conformance.",
+    "exec": ["${PYTHON}", "conformance/adversarial/verifiers.py", "echoes_candidate"],
+    "must_be_caught_by": "evidence_non_reproduction",
+    "request": {
+      "profile": "leak",
+      "task": "Compute the mean amount per category from a CSV into `result`.",
+      "candidate": "Honestly the answer is just to group by category and take the mean of the amount column, which gives 15, 40 and 100.",
+      "context": {"exercise": {"id": "ds-foundations"}, "stance": "peer"}
+    }
+  }
+]

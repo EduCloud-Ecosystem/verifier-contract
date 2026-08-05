@@ -1,0 +1,51 @@
+{
+  "name": "00-clean-pass",
+  "why": "Non-empty change set, every configured command exits 0.",
+  "request": {
+    "profile": "code",
+    "task": "Make the failing test pass.",
+    "candidate": " M src/portage/failup.py\n M src/portage/code_profile.py\n",
+    "context": {
+      "working_dir": ".",
+      "commands": {
+        "lint": [
+          "python3",
+          "-c",
+          "import sys; sys.exit(0)"
+        ],
+        "test": [
+          "python3",
+          "-c",
+          "import sys; sys.exit(0)"
+        ]
+      }
+    }
+  },
+  "expect": {
+    "verdict": "pass",
+    "profile": "code",
+    "detail": "change set is non-empty and every configured check passed",
+    "evidence": [
+      {
+        "check": "diff",
+        "status": "passed",
+        "changed_files": 2
+      },
+      {
+        "check": "lint",
+        "status": "passed",
+        "exit_code": 0
+      },
+      {
+        "check": "typecheck",
+        "status": "not_configured",
+        "exit_code": null
+      },
+      {
+        "check": "test",
+        "status": "passed",
+        "exit_code": 0
+      }
+    ]
+  }
+}
