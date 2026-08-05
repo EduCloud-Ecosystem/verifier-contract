@@ -446,22 +446,18 @@ Two designs look natural and are both wrong:
 
 **The same profile, invoked once per subject, with the fan-out in the caller.**
 
+This is Belay's shipped `governance.py::screen_passages` after the port. It is
+not the contract's code — the contract has no loop — and that is the point.
+
 ```python
-# Belay side. Not the contract's code — the contract has no loop.
 def screen_passages(passages, exercise, pack=None):
+    pack = pack or get_active_pack()
     kept, dropped = [], []
     for p in passages:
         verdict = leak_profile.verify(
-            {
-                "profile": "leak",
-                "task": exercise.get("goalText", ""),
-                "candidate": p.text,
-                "context": {
-                    "exercise": exercise,
-                    "stance": "peer",
-                    "subject_id": p.id,
-                },
-            },
+            leak_profile.build_request(
+                candidate=p.text, exercise=exercise, stance="peer", subject_id=p.id
+            ),
             pack=pack,
         )
         if verdict["verdict"] == "fail":
@@ -470,6 +466,41 @@ def screen_passages(passages, exercise, pack=None):
             kept.append(p)
     return {"kept": kept, "dropped": dropped, "retrieved": len(passages)}
 ```
+
+`build_request` assembles the ordinary four-field document of §3 — nothing more:
+
+```json
+{
+  "profile":   "leak",
+  "task":      "<the exercise's goal statement>",
+  "candidate": "<the passage text>",
+  "context":   {"exercise": { }, "stance": "peer", "subject_id": "<the passage id>"}
+}
+```
+
+The draft gate builds the same document from the tutor's message and omits
+`subject_id`. That is the entire difference between the two call sites.
+
+The verdict for a dropped passage:
+
+```json
+{
+  "verdict":     "fail",
+  "profile":     "leak",
+  "reason_code": "leak.is_solution",
+  "detail":      "candidate contains code that independently meets the exercise goal",
+  "evidence": [
+    {"signal": "is_solution",      "fired": true,  "subject_id": "kb-0031", "snippet_count": 1},
+    {"signal": "prose_disclosure", "fired": false, "subject_id": "kb-0031", "snippet_count": 1}
+  ]
+}
+```
+
+One evidence object per signal **evaluated**, not per signal that fired, in a
+fixed order. A `pass` therefore carries the same two objects with `fired: false`,
+which is how coverage becomes measurable rather than assumed (§4). Every value is
+an identifier, a boolean, or a count — nothing candidate-derived except
+`snippet_count`, which is a length.
 
 Every property survives:
 
