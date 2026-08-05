@@ -151,6 +151,56 @@ Both misfilings produce the same damage — a capability verdict recorded for an
 attempt that was never really judged — which is why the same rationale covers
 both and why the two sites must cross-reference each other and this section.
 
+### 2.4 Detecting subject-unreachability is half the caller's job; the other half is not aggregating over it
+
+§2.1 says the caller owns the distinction. That is a statement about who
+*detects* it, and detecting it is worth nothing on its own. A caller that
+records "this tier was never reached" and then computes statistics as though it
+had been has implemented the distinction and thrown it away, and the resulting
+numbers are worse than if it had never made the distinction at all — because
+they now look like they were checked.
+
+**The rule for callers that aggregate.** If you fan a candidate out across a
+ladder of subjects, cheapest first, taking the first that earns a `pass`, then a
+run is admissible capability evidence only if every rung below the winning rung
+produced a *verdict*. A rung that was never reached produced no verdict, so the
+run cannot say whether that rung would have sufficed, and it must not contribute
+to any capability statistic or to any training label derived from "the cheapest
+rung that passed".
+
+Note what this is not. It is not "drop the unreachable attempts and reconstruct
+from the rest". That removes the visible error and leaves a quieter one of the
+same sign: with the unreachable attempt gone, the run is indistinguishable from
+one that legitimately started at the higher rung, so it still lands in the
+win-rung distribution as a task that *needed* that rung, and still becomes a
+routing label pointing at a rung whose cheaper alternative was never tested.
+Admissibility is a judgement about the run. It is not a filter on records, and
+the unreachable attempts should stay in the run so that reports can count them.
+
+Inadmissible runs are excluded and **counted**. A capability statistic computed
+over a filtered population that does not say it was filtered is a worse defect
+than the one being fixed here.
+
+**First instance found in practice.** Portage. `failup.py` has recorded
+`category: "ok" | "capability" | "availability"` on every attempt since before
+this contract existed, and the comment §2.1 quotes states exactly why. Nothing
+downstream read the field: `measure.py` and `distill.py` reconstructed runs from
+`ok` and `tier` alone, so an unreachable tier 0 followed by a pass at tier 1 was
+recorded as "this task needs tier 1" across four independent readers — the
+headline escalation and floor-pass rates, the win-tier distribution, the
+counterfactual that decides whether a paid subscription lane can be cancelled,
+and the routing training labels. The discriminator was written and never read
+for the whole life of the instrument. The fix is one shared reconstruction
+(`src/portage/runlog.py::reconstruct`) applying the rule above, imported by both
+consumers, because three independent copies of the same reconstruction is how
+the defect survived in the first place.
+
+**Implementers: this is the failure mode to expect.** A second implementation
+gets the exit-code rule from §1.1 and the caller-side detection from §2.1 and
+will reproduce this defect exactly, because both of those can be satisfied
+completely while the aggregation stays wrong. The detection is the easy half and
+it is the half the spec was previously alone in describing.
+
 ---
 
 ## 3. The request document
