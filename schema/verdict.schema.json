@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/EduCloud-Ecosystem/verifier-contract/schema/verdict.schema.json",
+  "title": "Verifier verdict",
+  "description": "The document a verifier writes on stdout, on exit code 0 only. A non-zero exit means the verifier itself failed and reached no verdict; stdout is then undefined and must not be parsed. See SPEC.md sections 1.1, 2 and 4.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["verdict", "profile", "detail", "evidence"],
+  "properties": {
+    "verdict": {
+      "description": "The decision. Two values, no third. There is deliberately no 'error' value: a verifier that reached no verdict exits non-zero instead (SPEC.md section 1.1).",
+      "type": "string",
+      "enum": ["pass", "fail"]
+    },
+    "profile": {
+      "description": "Echoes the request's profile. A mismatch is a conformance failure. The reason_code namespace must equal this value — a cross-field constraint not expressible in draft 2020-12, checked by the conformance runner.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "reason_code": {
+      "description": "A registered code from SPEC.md section 7, namespaced by profile. Required when verdict is 'fail'. Singular by design: when several signals fire at once, this names the primary one under a precedence the profile documents, and evidence carries all of them (SPEC.md section 4.1).",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*\\.[a-z][a-z0-9_]*$"
+    },
+    "detail": {
+      "description": "Human-readable. Never parsed by a consumer. May be empty on a pass.",
+      "type": "string"
+    },
+    "evidence": {
+      "description": "Profile-defined objects. May be empty; a pass may carry evidence and often should. Evidence identifies and characterises — ids, counts, rates, signal names — and never reproduces the candidate (SPEC.md section 6). Order is part of the determinism guarantee (SPEC.md section 8).",
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "if": {
+    "properties": {
+      "verdict": { "const": "fail" }
+    },
+    "required": ["verdict"]
+  },
+  "then": {
+    "description": "A fail must carry a reason code. Enforced here rather than in prose, because a fail without a code is a verdict a consumer cannot route on, and routing on verdicts is what the contract is for.",
+    "required": ["reason_code"]
+  }
+}

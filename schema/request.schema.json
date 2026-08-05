@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/EduCloud-Ecosystem/verifier-contract/schema/request.schema.json",
+  "title": "Verifier request",
+  "description": "The document a verifier reads on stdin. Exactly four fields, closed. See SPEC.md sections 3 and 5: the closed shape IS the structural invariant — there is no field in which a model handle, credential, endpoint, or conversation history could travel, so a verifier cannot consult the model that produced the candidate.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profile", "task", "candidate", "context"],
+  "properties": {
+    "profile": {
+      "description": "Which question is being asked. Also the reason-code namespace (SPEC.md section 7).",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "task": {
+      "description": "What the candidate was supposed to do, in the task's own words. A verifier may ignore it; it must not be absent.",
+      "type": "string"
+    },
+    "candidate": {
+      "description": "The artifact being judged. May be empty — an empty candidate is a legitimate subject, not an error. Always a scalar string; structured inputs that describe the candidate belong in context.",
+      "type": "string"
+    },
+    "context": {
+      "description": "Everything else the profile needs. Profile-specific, and the only extension point. Each profile SHOULD close its own context shape; the contract only requires an object.",
+      "type": "object"
+    }
+  }
+}
